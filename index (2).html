@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StepIn — Community Task Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #09090F;
+    --bg2: #111118;
+    --bg3: #18181F;
+    --bg4: #1E1E28;
+    --border: #2A2A38;
+    --border2: #363648;
+    --text: #F0F0F8;
+    --text2: #B0B0C8;
+    --muted: #6C6C88;
+    --p: #7C6FFF;
+    --p2: #5A4FD6;
+    --p3: #3D34A8;
+    --p-glow: #7C6FFF33;
+    --p-lite: #7C6FFF15;
+    --green: #2ECC71;
+    --green-lite: #2ECC7115;
+    --amber: #F5A623;
+    --amber-lite: #F5A62315;
+    --red: #E74C3C;
+    --red-lite: #E74C3C15;
+    --cyan: #1BC8E0;
+    --cyan-lite: #1BC8E015;
+    --r: 14px;
+    --r-lg: 20px;
+    --shadow: 0 4px 24px #00000060;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Satoshi', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1,h2,h3,h4 { font-family: 'Clash Display', sans-serif; line-height: 1.2; }
+
+  /* ── Utility ── */
+  .hidden { display: none !important; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .w-full { width: 100%; }
+  .text-muted { color: var(--muted); }
+  .text-p { color: var(--p); }
+  .text-green { color: var(--green); }
+  .text-amber { color: var(--amber); }
+  .text-red { color: var(--red); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 var(--p-glow); }
+    70% { box-shadow: 0 0 0 10px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .anim-fade { animation: fadeUp 0.4s ease forwards; }
+  .anim-slide { animation: slideIn 0.3s ease forwards; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--p2); color: #fff; border: none;
+    border-radius: var(--r); padding: 13px 22px;
+    font-family: 'Satoshi', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .btn:hover { background: var(--p); transform: translateY(-1px); box-shadow: 0 8px 24px var(--p-glow); }
+  .btn:active { transform: translateY(0) scale(0.98); }
+  .btn-full { width: 100%; }
+  .btn-ghost {
+    background: transparent; color: var(--text2); border: 1px solid var(--border2);
+    border-radius: var(--r); padding: 12px 22px;
+    font-family: 'Satoshi', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost:hover { border-color: var(--p); color: var(--p); }
+  .btn-sm {
+    background: var(--p2); color: #fff; border: none; border-radius: 9px;
+    padding: 6px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; font-family: 'Satoshi', sans-serif;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+  }
+  .btn-sm:hover { background: var(--p); }
+  .btn-sm-o {
+    background: transparent; color: var(--p); border: 1px solid var(--p);
+    border-radius: 9px; padding: 6px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.15s; font-family: 'Satoshi', sans-serif;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-sm-o:hover { background: var(--p-lite); }
+  .btn-icon {
+    width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border2);
+    background: var(--bg3); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 16px; transition: all 0.15s; flex-shrink: 0;
+  }
+  .btn-icon:hover { border-color: var(--p); background: var(--p-lite); }
+
+  /* ── Forms ── */
+  .inp {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 12px 14px;
+    font-family: 'Satoshi', sans-serif; font-size: 14px; color: var(--text);
+    outline: none; transition: border-color 0.15s;
+  }
+  .inp:focus { border-color: var(--p); box-shadow: 0 0 0 3px var(--p-glow); }
+  .inp::placeholder { color: var(--muted); }
+  textarea.inp { resize: vertical; min-height: 90px; line-height: 1.6; }
+  select.inp { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236C6C88' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+  .card-surface { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: 7px; padding: 3px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .badge-p { background: var(--p-lite); color: #A89FFF; }
+  .badge-g { background: var(--green-lite); color: #5AE68D; }
+  .badge-a { background: var(--amber-lite); color: var(--amber); }
+  .badge-r { background: var(--red-lite); color: #F08080; }
+  .badge-c { background: var(--cyan-lite); color: var(--cyan); }
+
+  /* ── Stat cards ── */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+  .stat { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; text-align: center; }
+  .stat-val { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: var(--p); }
+  .stat-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 3px; }
+
+  /* ── Avatar ── */
+  .av {
+    border-radius: 50%; background: linear-gradient(135deg, var(--p2), var(--cyan));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; flex-shrink: 0; font-family: 'Clash Display', sans-serif;
+  }
+  .av-sm { width: 32px; height: 32px; font-size: 11px; }
+  .av-md { width: 42px; height: 42px; font-size: 14px; }
+  .av-lg { width: 64px; height: 64px; font-size: 22px; }
+  .av-xl { width: 80px; height: 80px; font-size: 28px; }
+
+  /* ── Progress ── */
+  .prog { height: 5px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--r); padding: 12px 24px;
+    font-size: 14px; font-weight: 600; color: var(--text);
+    box-shadow: var(--shadow); z-index: 9999;
+    transition: transform 0.3s ease;
+    display: flex; align-items: center; gap: 10px;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ══════════════════════════════════
+     NAVBAR
+  ══════════════════════════════════ */
+  #navbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg)EE; backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 62px;
+  }
+  .nav-logo { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .nav-logo span { color: var(--p); }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-link { background: none; border: none; color: var(--text2); font-family: 'Satoshi', sans-serif; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+  .nav-link:hover { color: var(--text); background: var(--bg3); }
+  .nav-link.active { color: var(--p); background: var(--p-lite); }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .notif-btn { position: relative; }
+  .notif-dot { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: var(--red); border-radius: 50%; border: 2px solid var(--bg); }
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    #navbar { padding: 0 16px; }
+  .nav-logo { font-size: 18px; }
+  }
+
+  /* ══════════════════════════════════
+     PAGES
+  ══════════════════════════════════ */
+  .page { min-height: calc(100vh - 62px); }
+
+  /* ══════════════════════════════════
+     LANDING PAGE
+  ══════════════════════════════════ */
+  #page-landing {
+    display: flex; flex-direction: column;
+  }
+  .hero {
+    padding: 80px 24px 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 0%, #7C6FFF18, transparent);
+    pointer-events: none;
+  }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--p-lite); border: 1px solid var(--p)44; border-radius: 20px; padding: 5px 16px; font-size: 12px; font-weight: 700; color: var(--p); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(36px, 6vw, 72px); font-weight: 700; letter-spacing: -1px; margin-bottom: 20px; }
+  .hero h1 .accent { color: var(--p); }
+  .hero p { font-size: 18px; color: var(--text2); max-width: 540px; margin: 0 auto 36px; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
+  .hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+  .hero-stat-val { font-family: 'Clash Display', sans-serif; font-size: 28px; font-weight: 700; }
+  .hero-stat-lbl { font-size: 13px; color: var(--muted); }
+
+  .features { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 36px; }
+  .feature-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-lg);
+    padding: 28px; transition: all 0.25s;
+  }
+  .feature-card:hover { border-color: var(--p); transform: translateY(-3px); box-shadow: 0 12px 40px var(--p-glow); }
+  .feature-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--p-lite); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+  .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* ══════════════════════════════════
+     AUTH PAGE
+  ══════════════════════════════════ */
+  #page-auth {
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 24px; min-height: calc(100vh - 62px);
+  }
+  .auth-box { width: 100%; max-width: 460px; }
+  .auth-tabs { display: flex; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 4px; margin-bottom: 28px; }
+  .auth-tab { flex: 1; padding: 9px; border: none; background: transparent; color: var(--muted); font-family: 'Satoshi', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; transition: all 0.2s; }
+  .auth-tab.active { background: var(--p2); color: #fff; }
+  .auth-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+  .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .auth-divider span { font-size: 12px; color: var(--muted); }
+  .social-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 12px; font-family: 'Satoshi', sans-serif; font-size: 14px; color: var(--text2); cursor: pointer; transition: all 0.15s; margin-bottom: 8px; font-weight: 500; }
+  .social-btn:hover { border-color: var(--border2); background: var(--bg4); color: var(--text); }
+  .otp-grid { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+  .otp-cell { width: 50px; height: 58px; background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--r); font-size: 24px; font-weight: 700; color: var(--p); font-family: 'Clash Display', sans-serif; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .otp-cell.filled { border-color: var(--p); background: var(--p-lite); }
+  .otp-cell.active { border-color: var(--p); box-shadow: 0 0 0 4px var(--p-glow); }
+
+  /* ══════════════════════════════════
+     DASHBOARD
+  ══════════════════════════════════ */
+  #page-dash {
+    padding: 28px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .dash-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+  .dash-hero {
+    background: var(--p2); border-radius: var(--r-lg); padding: 28px;
+    position: relative; overflow: hidden; margin-bottom: 24px;
+  }
+  .dash-hero::before {
+    content: ''; position: absolute; right: -40px; top: -40px;
+    width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,0.06);
+    pointer-events: none;
+  }
+  .dash-hero::after {
+    content: ''; position: absolute; right: 60px; bottom: -60px;
+    width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 768px) { .dash-grid { grid-template-columns: 1fr; } }
+
+  /* ══════════════════════════════════
+     TASK FEED
+  ══════════════════════════════════ */
+  #page-feed { padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+  .feed-toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .search-box { flex: 1; min-width: 200px; position: relative; }
+  .search-box input { padding-left: 42px; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none; }
+  .chip-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; margin-bottom: 16px; }
+  .chip-scroll::-webkit-scrollbar { display: none; }
+  .chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .chip:hover { border-color: var(--border2); color: var(--text); }
+  .chip.on { background: var(--p-lite); border-color: var(--p); color: #A89FFF; font-weight: 700; }
+  .feed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .task-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: 20px;
+    transition: all 0.2s; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .task-card::before { content: ''; position: absolute; inset: 0; background: var(--p-lite); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .task-card:hover { border-color: var(--p); transform: translateY(-2px); box-shadow: 0 8px 32px var(--p-glow); }
+  .task-card:hover::before { opacity: 1; }
+  .task-card.urgent { border-color: var(--p)88; }
+  .task-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .task-title { font-family: 'Clash Display', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .task-info { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .task-footer { display: flex; align-items: center; justify-content: space-between; }
+  .task-reward { font-family: 'Clash Display', sans-serif; font-size: 22px; font-weight: 700; color: var(--green); }
+  .task-poster { display: flex; align-items: center; gap: 8px; }
+
+  /* ══════════════════════════════════
+     CREATE TASK
+  ══════════════════════════════════ */
+  #page-create { padding: 28px 24px; max-width: 760px; margin: 0 auto; }
+  .create-steps { display: flex; gap: 0; margin-bottom: 32px; border-radius: var(--r); overflow: hidden; background: var(--bg2); border: 1px solid var(--border); }
+  .create-step { flex: 1; padding: 14px; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.2s; position: relative; }
+  .create-step.done { color: var(--green); background: var(--green-lite); }
+  .create-step.active { color: var(--p); background: var(--p-lite); }
+  .create-step-num { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; border: 2px solid currentColor; font-size: 11px; margin: 0 auto 4px; }
+  .create-form { display: none; }
+  .create-form.active { display: block; animation: fadeUp 0.3s ease; }
+  .fee-breakdown { background: var(--bg3); border-radius: var(--r); padding: 16px; margin-top: 12px; }
+  .fee-row { display: flex; justify-content: space-between; font-size: 14px; padding: 5px 0; }
+  .fee-row.total { font-weight: 700; font-size: 16px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
+
+  /* ══════════════════════════════════
+     MAP PAGE
+  ══════════════════════════════════ */
+  #page-map { padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+  .map-layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; }
+  @media (max-width: 900px) { .map-layout { grid-template-columns: 1fr; } }
+  .map-container {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r-lg); overflow: hidden; position: relative;
+    min-height: 500px;
+  }
+  .map-canvas { width: 100%; height: 500px; }
+  .map-overlay-top { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
+  .map-badge { pointer-events: all; background: var(--green); color: #052e16; border-radius: 9px; padding: 5px 14px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .map-badge-dot { width: 7px; height: 7px; background: rgba(0,0,0,0.4); border-radius: 50%; }
+  .map-sidebar { display: flex; flex-direction: column; gap: 12px; max-height: 560px; overflow-y: auto; }
+
+  /* ══════════════════════════════════
+     WALLET PAGE
+  ══════════════════════════════════ */
+  #page-wallet { padding: 28px 24px; max-width: 900px; margin: 0 auto; }
+  .wallet-card {
+    background: var(--p2); border-radius: var(--r-lg); padding: 28px;
+    position: relative; overflow: hidden; margin-bottom: 24px;
+  }
+  .wallet-card::before { content: ''; position: absolute; right: -30px; top: -30px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.07); pointer-events: none; }
+  .wallet-card::after { content: ''; position: absolute; right: 40px; bottom: -50px; width: 110px; height: 110px; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none; }
+  .wallet-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .wallet-action-btn { flex: 1; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: var(--r); padding: 10px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.15s; font-family: 'Satoshi', sans-serif; }
+  .wallet-action-btn:hover { background: rgba(255,255,255,0.25); }
+  .tx-list { display: flex; flex-direction: column; gap: 0; }
+  .tx-row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .tx-row:last-child { border-bottom: none; }
+  .tx-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .tx-amt { font-family: 'Clash Display', sans-serif; font-size: 16px; font-weight: 700; margin-left: auto; white-space: nowrap; }
+
+  /* ══════════════════════════════════
+     PROFILE PAGE
+  ══════════════════════════════════ */
+  #page-profile { padding: 28px 24px; max-width: 900px; margin: 0 auto; }
+  .profile-header { display: flex; align-items: flex-start; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+  .profile-av-wrap { position: relative; }
+  .profile-edit-btn { position: absolute; bottom: 2px; right: 2px; width: 24px; height: 24px; background: var(--p2); border-radius: 50%; border: 2px solid var(--bg); display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 640px) { .profile-grid { grid-template-columns: 1fr; } }
+  .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+  .achievement { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; text-align: center; transition: all 0.2s; }
+  .achievement:hover { border-color: var(--border2); }
+  .achievement.earned { border-color: var(--amber)44; background: var(--amber-lite); }
+  .achievement.locked { opacity: 0.4; }
+  .achievement-icon { font-size: 28px; margin-bottom: 6px; }
+  .achievement-name { font-size: 11px; color: var(--text2); font-weight: 500; }
+
+  /* ══════════════════════════════════
+     TASK DETAIL MODAL
+  ══════════════════════════════════ */
+  #modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+    z-index: 200; display: flex; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(4px);
+  }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: var(--r-lg); padding: 28px;
+    max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+    animation: fadeUp 0.25s ease;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .modal-close { background: var(--bg3); border: 1px solid var(--border); border-radius: 9px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--muted); transition: all 0.15s; flex-shrink: 0; }
+  .modal-close:hover { color: var(--text); border-color: var(--border2); }
+  .modal-detail-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .modal-detail-row:last-of-type { border: none; }
+  .modal-detail-icon { font-size: 16px; width: 24px; flex-shrink: 0; }
+
+  /* ══════════════════════════════════
+     ONBOARDING OVERLAY
+  ══════════════════════════════════ */
+  #onboard-overlay {
+    position: fixed; inset: 0; background: var(--bg);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .onboard-box { max-width: 540px; width: 100%; animation: fadeUp 0.4s ease; }
+  .onboard-steps { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
+  .onboard-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); transition: all 0.3s; }
+  .onboard-dot.done { background: var(--green); }
+  .onboard-dot.active { background: var(--p); width: 24px; border-radius: 4px; }
+  .goal-option { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; }
+  .goal-option:hover { border-color: var(--border2); }
+  .goal-option.selected { border-color: var(--p); background: var(--p-lite); }
+  .goal-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border2); margin-left: auto; flex-shrink: 0; transition: all 0.15s; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+  .goal-option.selected .goal-check { background: var(--p2); border-color: var(--p); color: #fff; }
+
+  /* ══════════════════════════════════
+     SECTION HEADERS
+  ══════════════════════════════════ */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 600; }
+  .section-link { font-size: 13px; color: var(--p); cursor: pointer; font-weight: 600; }
+  .section-link:hover { text-decoration: underline; }
+
+  /* ══════════════════════════════════
+     DIVIDER
+  ══════════════════════════════════ */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ══════════════════════════════════
+     EMPTY STATE
+  ══════════════════════════════════ */
+  .empty { text-align: center; padding: 48px 24px; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty h3 { font-size: 18px; color: var(--text2); margin-bottom: 8px; }
+
+  /* ══════════════════════════════════
+     FOOTER
+  ══════════════════════════════════ */
+  #footer { background: var(--bg2); border-top: 1px solid var(--border); padding: 40px 24px; margin-top: 60px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  .footer-logo { font-family: 'Clash Display', sans-serif; font-size: 20px; font-weight: 700; }
+  .footer-logo span { color: var(--p); }
+  .footer-copy { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('landing')">
+    Step<span>In</span>
+  </div>
+  <div class="nav-links" id="nav-links">
+    <button class="nav-link" onclick="showPage('feed')">Browse tasks</button>
+    <button class="nav-link" onclick="showPage('map')">Map</button>
+  </div>
+  <div class="nav-right" id="nav-right">
+    <button class="btn-ghost" onclick="showPage('auth')" style="padding: 8px 18px; font-size: 13px;">Log in</button>
+    <button class="btn" onclick="showPage('auth')" style="padding: 9px 18px; font-size: 13px;">Get started</button>
+  </div>
+  <div class="nav-right hidden" id="nav-authed">
+    <div class="btn-icon notif-btn" onclick="showToast('🔔 3 new notifications')">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+    <div class="btn-icon" onclick="showPage('wallet')">💳</div>
+    <div class="av av-sm" style="cursor:pointer" onclick="showPage('profile')">PS</div>
+  </div>
+</nav>
+
+<!-- ══ TOAST ══ -->
+<div id="toast"></div>
+
+<!-- ══ MODAL OVERLAY ══ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- ══ ONBOARDING OVERLAY ══ -->
+<div id="onboard-overlay" class="hidden">
+  <div class="onboard-box">
+    <div style="text-align:center; margin-bottom:28px;">
+      <div style="font-family:'Clash Display',sans-serif; font-size:28px; font-weight:700; margin-bottom:8px;">Welcome to <span style="color:var(--p)">StepIn</span></div>
+      <p style="color:var(--text2); font-size:15px;">Let's set up your profile in 3 quick steps.</p>
+    </div>
+    <div class="onboard-steps" id="onboard-steps">
+      <div class="onboard-dot active"></div>
+      <div class="onboard-dot"></div>
+      <div class="onboard-dot"></div>
+    </div>
+    <div id="onboard-step-1">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:22px; margin-bottom:6px;">Your profile</h2>
+        <p style="color:var(--text2); font-size:14px;">How should the community know you?</p>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Full name</label>
+        <input class="inp" id="ob-name" type="text" placeholder="Priya Sharma">
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Location</label>
+        <div style="display:flex; gap:8px;">
+          <input class="inp" id="ob-loc" type="text" placeholder="Bandra West, Mumbai" style="flex:1;">
+          <button class="btn-icon" onclick="autoDetectLocation()" title="Auto-detect">📍</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:20px;">
+        <label>Phone</label>
+        <input class="inp" id="ob-phone" type="tel" placeholder="+91 98765 43210">
+      </div>
+      <button class="btn btn-full" onclick="onboardNext(2)">Continue →</button>
+    </div>
+    <div id="onboard-step-2" class="hidden">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:22px; margin-bottom:6px;">What brings you here?</h2>
+        <p style="color:var(--text2); font-size:14px;">Select all that apply.</p>
+      </div>
+      <div class="goal-option selected" onclick="toggleGoal(this)">
+        <span style="font-size:20px;">📋</span>
+        <div><p style="font-weight:600; font-size:14px;">Post tasks</p><p style="font-size:12px; color:var(--muted);">Hire community help</p></div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-option selected" onclick="toggleGoal(this)">
+        <span style="font-size:20px;">🤝</span>
+        <div><p style="font-weight:600; font-size:14px;">Attend tasks</p><p style="font-size:12px; color:var(--muted);">Earn by helping others</p></div>
+        <div class="goal-check">✓</div>
+      </div>
+      <div class="goal-option" onclick="toggleGoal(this)">
+        <span style="font-size:20px;">🏆</span>
+        <div><p style="font-weight:600; font-size:14px;">Compete &amp; rank</p><p style="font-size:12px; color:var(--muted);">Weekly leaderboards</p></div>
+        <div class="goal-check"></div>
+      </div>
+      <div class="goal-option" onclick="toggleGoal(this)">
+        <span style="font-size:20px;">💼</span>
+        <div><p style="font-weight:600; font-size:14px;">Build reputation</p><p style="font-size:12px; color:var(--muted);">Reviews &amp; badges</p></div>
+        <div class="goal-check"></div>
+      </div>
+      <button class="btn btn-full" style="margin-top:16px;" onclick="onboardNext(3)">Continue →</button>
+    </div>
+    <div id="onboard-step-3" class="hidden">
+      <div style="margin-bottom:20px;">
+        <h2 style="font-size:22px; margin-bottom:6px;">Preferred categories</h2>
+        <p style="color:var(--text2); font-size:14px;">We'll personalise your task feed.</p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px;" id="cat-chips">
+        <div class="chip on" onclick="this.classList.toggle('on')">🛒 Delivery</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">🔧 Repairs</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">🧹 Cleaning</div>
+        <div class="chip" onclick="this.classList.toggle('on')">💻 Tech help</div>
+        <div class="chip" onclick="this.classList.toggle('on')">📦 Moving</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">🛍️ Shopping</div>
+        <div class="chip" onclick="this.classList.toggle('on')">🐾 Pet care</div>
+        <div class="chip" onclick="this.classList.toggle('on')">🍳 Cooking</div>
+      </div>
+      <button class="btn btn-full" onclick="finishOnboard()">Start using StepIn 🎉</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: LANDING
+══════════════════════════════════ -->
+<div id="page-landing" class="page">
+  <section class="hero">
+    <div class="hero-eyebrow">🚀 Now live in Mumbai &amp; Bangalore</div>
+    <h1>Your community.<br>Your <span class="accent">tasks. </span>Your income.</h1>
+    <p>Post tasks, find helpers nearby, earn rewards — all in one place. StepIn connects people who need help with people who want to earn.</p>
+    <div class="hero-actions">
+      <button class="btn" onclick="showPage('auth')" style="font-size:15px; padding:14px 28px;">Get started free</button>
+      <button class="btn-ghost" onclick="showPage('feed')" style="font-size:15px; padding:14px 28px;">Browse tasks →</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val" style="color:var(--p)">12,400+</div><div class="hero-stat-lbl">Tasks completed</div></div>
+      <div><div class="hero-stat-val" style="color:var(--green)">₹48L+</div><div class="hero-stat-lbl">Paid to helpers</div></div>
+      <div><div class="hero-stat-val" style="color:var(--amber)">4.9★</div><div class="hero-stat-lbl">Average rating</div></div>
+      <div><div class="hero-stat-val">8,200+</div><div class="hero-stat-lbl">Active users</div></div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div style="text-align:center; margin-bottom:8px;">
+      <h2 style="font-size:clamp(28px,4vw,42px); margin-bottom:12px;">Everything you need in<br>one marketplace</h2>
+      <p style="color:var(--text2); font-size:16px; max-width:480px; margin:0 auto;">From posting to payment — StepIn handles the entire workflow securely.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Post any task</h3>
+        <p>Describe what you need done, set a location, time, and reward — published to the community in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>GPS-powered matching</h3>
+        <p>Tasks are tied to real locations. Browse the live map to find opportunities right around the corner.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Escrow payments</h3>
+        <p>Funds are held securely and released only when the task is verified complete. Both sides protected.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Reputation system</h3>
+        <p>Build your profile with every task. Ratings, badges, and reviews that make you stand out.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>Earn &amp; compete</h3>
+        <p>Weekly leaderboards, milestone bonuses, and a live wallet to track and withdraw your earnings.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3>Community first</h3>
+        <p>Real people in your neighbourhood, verified profiles, and a trust score that grows over time.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:60px 24px; text-align:center; background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <h2 style="font-size:clamp(26px,4vw,40px); margin-bottom:12px;">Ready to step in?</h2>
+    <p style="color:var(--text2); margin-bottom:28px; font-size:16px;">Join thousands earning from their community.</p>
+    <button class="btn" onclick="showPage('auth')" style="font-size:15px; padding:14px 32px;">Create free account</button>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: AUTH
+══════════════════════════════════ -->
+<div id="page-auth" class="page hidden" style="background:var(--bg);">
+  <div style="display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 62px); padding:40px 24px;">
+    <div style="width:100%; max-width:460px;">
+      <div style="text-align:center; margin-bottom:28px;">
+        <div style="font-family:'Clash Display',sans-serif; font-size:26px; font-weight:700; margin-bottom:6px;">Step<span style="color:var(--p)">In</span></div>
+        <p style="color:var(--text2); font-size:14px;" id="auth-subtitle">Sign in to your account</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-signin" onclick="switchAuth('signin')">Sign in</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuth('signup')">Create account</button>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="auth-signin">
+        <div class="social-btn" onclick="showToast('Opening Google sign-in...')">
+          <span style="font-size:16px; font-weight:800; color:#4285F4;">G</span> Continue with Google
+        </div>
+        <div class="social-btn" onclick="showToast('Opening Facebook sign-in...')">
+          <span style="font-size:16px; font-weight:800; color:#1877F2;">f</span> Continue with Facebook
+        </div>
+        <div class="social-btn" onclick="showToast('Opening Apple sign-in...')">
+          <span style="font-size:16px;">🍎</span> Continue with Apple
+        </div>
+        <div class="auth-divider"><span>or</span></div>
+        <div class="field" style="margin-bottom:12px;">
+          <label>Email</label>
+          <input class="inp" type="email" placeholder="you@example.com">
+        </div>
+        <div class="field" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="margin:0;">Password</label>
+            <span style="font-size:12px; color:var(--p); cursor:pointer;">Forgot?</span>
+          </div>
+          <input class="inp" type="password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-full" onclick="signIn()">Sign in</button>
+        <div class="auth-divider"><span>or sign in with phone</span></div>
+        <div style="display:flex; gap:8px;">
+          <input class="inp" type="tel" placeholder="+91 98765 43210" style="flex:1;">
+          <button class="btn-sm" onclick="showOTP()" style="padding:0 18px; height:48px; border-radius:var(--r);">Send OTP</button>
+        </div>
+        <div id="otp-section" class="hidden" style="margin-top:16px;">
+          <p style="font-size:13px; color:var(--text2); text-align:center; margin-bottom:4px;">Enter the 6-digit code sent to your phone</p>
+          <div class="otp-grid">
+            <div class="otp-cell filled">4</div>
+            <div class="otp-cell filled">7</div>
+            <div class="otp-cell filled">2</div>
+            <div class="otp-cell active">_</div>
+            <div class="otp-cell">_</div>
+            <div class="otp-cell">_</div>
+          </div>
+          <button class="btn btn-full" onclick="signIn()">Verify &amp; sign in</button>
+        </div>
+      </div>
+
+      <!-- SIGN UP -->
+      <div id="auth-signup" class="hidden">
+        <div class="social-btn" onclick="showToast('Opening Google sign-up...')">
+          <span style="font-size:16px; font-weight:800; color:#4285F4;">G</span> Sign up with Google
+        </div>
+        <div class="social-btn" onclick="showToast('Opening Facebook...')">
+          <span style="font-size:16px; font-weight:800; color:#1877F2;">f</span> Sign up with Facebook
+        </div>
+        <div class="auth-divider"><span>or with email</span></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+          <div class="field"><label>First name</label><input class="inp" type="text" placeholder="Priya"></div>
+          <div class="field"><label>Last name</label><input class="inp" type="text" placeholder="Sharma"></div>
+        </div>
+        <div class="field" style="margin-bottom:12px;"><label>Email</label><input class="inp" type="email" placeholder="you@example.com"></div>
+        <div class="field" style="margin-bottom:12px;"><label>Phone</label><input class="inp" type="tel" placeholder="+91 98765 43210"></div>
+        <div class="field" style="margin-bottom:20px;"><label>Password</label><input class="inp" type="password" placeholder="Min. 8 characters"></div>
+        <button class="btn btn-full" onclick="signUp()">Create account</button>
+        <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:12px;">By signing up, you agree to our <span style="color:var(--p); cursor:pointer;">Terms</span> &amp; <span style="color:var(--p); cursor:pointer;">Privacy Policy</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: DASHBOARD
+══════════════════════════════════ -->
+<div id="page-dash" class="page hidden">
+  <div id="page-dash-inner" style="padding:28px 24px; max-width:1200px; margin:0 auto;">
+    <div class="dash-header">
+      <div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:4px;" id="dash-greeting">Good morning 👋</p>
+        <h1 style="font-size:28px;" id="dash-username">User</h1>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+          <div class="av av-sm" id="dash-initials" style="display:none;">U</div>
+        </div>
+      </div>
+      <button class="btn" onclick="showPage('create')">+ Post a task</button>
+    </div>
+
+    <!-- Hero -->
+    <div class="dash-hero">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; position:relative; z-index:1;">
+        <div>
+          <p style="font-size:12px; color:#C7C3FF; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:6px;">This month's earnings</p>
+          <p style="font-family:'Clash Display',sans-serif; font-size:40px; font-weight:700; color:#fff; margin-bottom:4px;" id="dash-hero-earnings">₹0</p>
+          <p style="font-size:13px; color:#A5B4FC;" id="dash-hero-sub">0 tasks completed · 0 posted</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="wallet-action-btn" onclick="showPage('create')" style="min-width:120px;">+ Post task</button>
+          <button class="wallet-action-btn" onclick="showPage('feed')" style="min-width:120px;">Browse tasks</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid" style="margin-bottom:28px;">
+      <div class="stat"><div class="stat-val" id="stat-posted">0</div><div class="stat-lbl">Tasks posted</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--green);" id="stat-completed">0</div><div class="stat-lbl">Completed</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--amber);">—</div><div class="stat-lbl">Rating</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--cyan);" id="stat-wallet">₹0</div><div class="stat-lbl">Wallet balance</div></div>
+    </div>
+
+    <div class="dash-grid">
+      <!-- Active tasks -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">My tasks</div>
+          <span class="section-link" onclick="showPage('feed')">Browse all</span>
+        </div>
+        <div id="dash-active-tasks">
+          <div class="empty">
+            <div class="empty-icon">📋</div>
+            <h3>No tasks yet</h3>
+            <p style="margin-bottom:16px;">Post your first task and find someone to help.</p>
+            <button class="btn" onclick="showPage('create')">+ Post a task</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goals & Recent activity -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">Goal progress</div>
+        </div>
+        <div class="card" style="margin-bottom:20px;" id="dash-goals">
+          <div class="empty" style="padding:20px;">
+            <div class="empty-icon">🎯</div>
+            <p style="color:var(--muted);">Complete your first task to start tracking goals.</p>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title">Recent activity</div>
+        </div>
+        <div class="card" id="dash-activity">
+          <div class="empty" style="padding:24px;">
+            <div class="empty-icon">📊</div>
+            <p style="color:var(--muted);">No activity yet. Post or apply for tasks to get started.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: TASK FEED
+══════════════════════════════════ -->
+<div id="page-feed" class="page hidden">
+  <div style="padding:28px 24px; max-width:1100px; margin:0 auto;">
+    <div class="section-header" style="margin-bottom:20px;">
+      <h1 style="font-size:28px;">Task feed</h1>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <select class="inp" style="width:auto; padding:9px 36px 9px 14px; font-size:13px;" id="sort-select" onchange="renderFeed()">
+          <option value="newest">Sort: Newest</option>
+          <option value="reward">Highest reward</option>
+          <option value="closest">Closest</option>
+        </select>
+        <select class="inp" style="width:auto; padding:9px 36px 9px 14px; font-size:13px;" id="dist-select" onchange="renderFeed()">
+          <option>Within 2 km</option>
+          <option>Within 5 km</option>
+          <option>Any distance</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="feed-toolbar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="inp" type="text" placeholder="Search tasks near you..." id="search-input" oninput="renderFeed()">
+      </div>
+    </div>
+
+    <div class="chip-scroll" id="cat-filter">
+      <div class="chip on" onclick="filterCat(this, 'all')">All</div>
+      <div class="chip" onclick="filterCat(this, 'delivery')">🛒 Delivery</div>
+      <div class="chip" onclick="filterCat(this, 'repair')">🔧 Repairs</div>
+      <div class="chip" onclick="filterCat(this, 'shopping')">🛍️ Shopping</div>
+      <div class="chip" onclick="filterCat(this, 'tech')">💻 Tech</div>
+      <div class="chip" onclick="filterCat(this, 'cleaning')">🧹 Cleaning</div>
+      <div class="chip" onclick="filterCat(this, 'moving')">📦 Moving</div>
+    </div>
+
+    <div class="feed-grid" id="feed-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: CREATE TASK
+══════════════════════════════════ -->
+<div id="page-create" class="page hidden">
+  <div style="padding:28px 24px; max-width:760px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+      <button class="btn-icon" onclick="showPage('dash')">←</button>
+      <h1 style="font-size:24px;">Create a task</h1>
+    </div>
+
+    <div class="create-steps" id="create-steps">
+      <div class="create-step active" id="cs1">
+        <div class="create-step-num">1</div>Details
+      </div>
+      <div class="create-step" id="cs2">
+        <div class="create-step-num">2</div>Location
+      </div>
+      <div class="create-step" id="cs3">
+        <div class="create-step-num">3</div>Reward
+      </div>
+      <div class="create-step" id="cs4">
+        <div class="create-step-num">4</div>Review
+      </div>
+    </div>
+
+    <!-- STEP 1: Details -->
+    <div class="create-form active" id="cf1">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-size:18px; margin-bottom:20px;">Task details</h3>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Task title</label>
+          <input class="inp" id="ct-title" type="text" placeholder="e.g. Pick up groceries from D-Mart">
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Category</label>
+          <select class="inp" id="ct-cat">
+            <option value="">Select category...</option>
+            <option value="delivery">🛒 Delivery &amp; Shopping</option>
+            <option value="repair">🔧 Repairs &amp; Maintenance</option>
+            <option value="cleaning">🧹 Cleaning</option>
+            <option value="tech">💻 Tech support</option>
+            <option value="moving">📦 Moving &amp; Logistics</option>
+            <option value="other">🔖 Other</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Description</label>
+          <textarea class="inp" id="ct-desc" placeholder="Describe exactly what needs to be done, any special requirements, what to bring..."></textarea>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="field">
+            <label>Date</label>
+            <input class="inp" id="ct-date" type="date">
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <input class="inp" id="ct-time" type="time">
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-full" onclick="createStep(2)">Continue: Location →</button>
+    </div>
+
+    <!-- STEP 2: Location -->
+    <div class="create-form" id="cf2">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-size:18px; margin-bottom:20px;">Task location</h3>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Address</label>
+          <div style="display:flex; gap:8px;">
+            <input class="inp" id="ct-loc" type="text" placeholder="Bandra West, Mumbai" style="flex:1;">
+            <button class="btn-icon" onclick="autoDetectLocation(); document.getElementById('ct-loc').value = 'Bandra West, Mumbai';" title="Detect location">📍</button>
+          </div>
+        </div>
+        <div style="background:var(--bg3); border-radius:var(--r); overflow:hidden; margin-bottom:14px;">
+          <svg width="100%" viewBox="0 0 700 220" style="display:block;">
+            <rect width="700" height="220" fill="#0D1A12"/>
+            <line x1="0" y1="65" x2="700" y2="65" stroke="#152A1E" stroke-width="16"/>
+            <line x1="0" y1="130" x2="700" y2="130" stroke="#152A1E" stroke-width="20"/>
+            <line x1="0" y1="190" x2="700" y2="190" stroke="#152A1E" stroke-width="12"/>
+            <line x1="150" y1="0" x2="150" y2="220" stroke="#152A1E" stroke-width="12"/>
+            <line x1="350" y1="0" x2="350" y2="220" stroke="#152A1E" stroke-width="18"/>
+            <line x1="550" y1="0" x2="550" y2="220" stroke="#152A1E" stroke-width="12"/>
+            <rect x="160" y="135" width="180" height="50" rx="8" fill="#122A1C"/>
+            <text x="250" y="165" text-anchor="middle" fill="#1D9E75" font-size="13">🌳 Garden Park</text>
+            <rect x="360" y="68" width="160" height="40" rx="7" fill="#1A2240"/>
+            <text x="440" y="93" text-anchor="middle" fill="#3B82F6" font-size="13">Shopping mall</text>
+            <circle cx="350" cy="110" r="14" fill="#7C6FFF"/>
+            <circle cx="350" cy="110" r="28" fill="#7C6FFF" opacity=".15"/>
+            <circle cx="350" cy="110" r="42" fill="#7C6FFF" opacity=".07"/>
+            <text x="350" y="114" text-anchor="middle" fill="white" font-size="10" font-weight="bold">📍 You</text>
+          </svg>
+        </div>
+        <div class="field">
+          <label>Additional location notes</label>
+          <input class="inp" id="ct-locnote" type="text" placeholder="e.g. Ring bell 3B, parking available on street">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost" onclick="createStep(1)">← Back</button>
+        <button class="btn" style="flex:1;" onclick="createStep(3)">Continue: Reward →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Reward -->
+    <div class="create-form" id="cf3">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="font-size:18px; margin-bottom:20px;">Set the reward</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+          <div class="field">
+            <label>Amount (₹)</label>
+            <input class="inp" id="ct-reward" type="number" placeholder="200" min="50" value="200" oninput="updateFees()">
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select class="inp" id="ct-type">
+              <option>Fixed price</option>
+              <option>Hourly rate</option>
+              <option>Negotiable</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Estimated duration</label>
+          <select class="inp" id="ct-duration">
+            <option>Less than 1 hour</option>
+            <option>1–2 hours</option>
+            <option>2–4 hours</option>
+            <option>Half day</option>
+            <option>Full day</option>
+          </select>
+        </div>
+        <div class="fee-breakdown" id="fee-breakdown">
+          <div class="fee-row"><span>Task reward</span><span id="fee-reward">₹0</span></div>
+          <div class="fee-row"><span style="color:var(--muted);">Platform fee (10%)</span><span id="fee-platform" style="color:var(--muted);">₹0</span></div>
+          <div class="fee-row total"><span>You pay</span><span id="fee-total" style="color:var(--green);">₹0</span></div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg4); border-radius:var(--r); padding:14px; margin-top:12px;">
+          <div>
+            <p style="font-size:14px; font-weight:600;">🔒 Escrow protection</p>
+            <p style="font-size:12px; color:var(--muted); margin-top:2px;">Funds held until task is verified complete</p>
+          </div>
+          <div style="width:42px; height:22px; background:var(--green); border-radius:11px; position:relative; cursor:pointer;">
+            <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; right:3px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost" onclick="createStep(2)">← Back</button>
+        <button class="btn" style="flex:1;" onclick="createStep(4)">Review &amp; post →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Review -->
+    <div class="create-form" id="cf4">
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <h3 style="font-size:18px;">Review your task</h3>
+          <span class="badge badge-p">PREVIEW</span>
+        </div>
+        <div class="task-card" style="margin-bottom:0; cursor:default;" onclick="">
+          <div class="task-meta">
+            <span class="badge badge-p" id="review-cat">📋 TASK</span>
+            <span style="font-size:12px; color:var(--muted); margin-left:auto;">Just now</span>
+          </div>
+          <div class="task-title" id="review-title">Your task title</div>
+          <div class="task-info">
+            <span>📍 <span id="review-loc">Location</span></span>
+            <span>🕒 <span id="review-date">Date &amp; time</span></span>
+          </div>
+          <div class="task-footer">
+            <div class="task-poster">
+              <div class="av av-sm">PS</div>
+              <span style="font-size:12px; color:var(--text2);">Priya S. · ⭐4.9</span>
+            </div>
+            <span class="task-reward" id="review-reward">₹200</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="fee-row" style="font-size:14px; padding:6px 0;"><span>Task reward to helper</span><span id="review-fee-reward" style="color:var(--green);">₹200</span></div>
+        <div class="fee-row" style="font-size:14px; padding:6px 0;"><span style="color:var(--muted);">Platform fee</span><span id="review-fee-platform" style="color:var(--muted);">₹20</span></div>
+        <div class="fee-row total" style="font-size:16px; padding-top:12px;"><span>Total charged to your wallet</span><span id="review-fee-total" style="color:var(--green);">₹220</span></div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost" onclick="createStep(3)">← Back</button>
+        <button class="btn" style="flex:1; background:var(--green); font-size:15px;" onclick="postTask()">🚀 Post &amp; pay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: MAP
+══════════════════════════════════ -->
+<div id="page-map" class="page hidden">
+  <div style="padding:28px 24px; max-width:1100px; margin:0 auto;">
+    <div class="section-header" style="margin-bottom:16px;">
+      <h1 style="font-size:28px;">Nearby tasks</h1>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-ghost" style="font-size:13px; padding:8px 16px;">Layers</button>
+        <button class="btn" style="font-size:13px; padding:8px 16px;" onclick="showPage('create')">+ Post task</button>
+      </div>
+    </div>
+
+    <div class="chip-scroll" style="margin-bottom:16px;">
+      <div class="chip on">All tasks</div>
+      <div class="chip">🛒 Delivery</div>
+      <div class="chip">🔧 Repair</div>
+      <div class="chip">💰 High reward</div>
+      <div class="chip">⚡ Urgent</div>
+    </div>
+
+    <div class="map-layout">
+      <div class="map-container">
+        <svg class="map-canvas" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
+          <rect width="700" height="500" fill="#0D1A12"/>
+          <!-- Streets -->
+          <line x1="0" y1="100" x2="700" y2="100" stroke="#152A1E" stroke-width="18"/>
+          <line x1="0" y1="220" x2="700" y2="220" stroke="#152A1E" stroke-width="24"/>
+          <line x1="0" y1="340" x2="700" y2="340" stroke="#152A1E" stroke-width="14"/>
+          <line x1="0" y1="440" x2="700" y2="440" stroke="#152A1E" stroke-width="10"/>
+          <line x1="120" y1="0" x2="120" y2="500" stroke="#152A1E" stroke-width="14"/>
+          <line x1="280" y1="0" x2="280" y2="500" stroke="#152A1E" stroke-width="22"/>
+          <line x1="460" y1="0" x2="460" y2="500" stroke="#152A1E" stroke-width="14"/>
+          <line x1="600" y1="0" x2="600" y2="500" stroke="#152A1E" stroke-width="10"/>
+          <!-- Park -->
+          <rect x="130" y="230" width="140" height="100" rx="10" fill="#122A1C"/>
+          <text x="200" y="285" text-anchor="middle" fill="#1D9E75" font-size="14">🌳 Linking Road Park</text>
+          <!-- Mall -->
+          <rect x="470" y="108" width="120" height="60" rx="8" fill="#1A2240"/>
+          <text x="530" y="142" text-anchor="middle" fill="#4B7FE0" font-size="13">🏢 Palladium</text>
+          <!-- Building blocks -->
+          <rect x="295" y="108" width="55" height="40" rx="5" fill="#151520"/>
+          <rect x="295" y="350" width="55" height="50" rx="5" fill="#151520"/>
+          <rect x="470" y="230" width="120" height="100" rx="8" fill="#151520"/>
+          <!-- User dot -->
+          <circle cx="350" cy="250" r="16" fill="#7C6FFF"/>
+          <circle cx="350" cy="250" r="32" fill="#7C6FFF" opacity=".18"/>
+          <circle cx="350" cy="250" r="55" fill="#7C6FFF" opacity=".07"/>
+          <circle cx="350" cy="250" r="90" fill="none" stroke="#7C6FFF" stroke-width="1" stroke-dasharray="6 6" opacity=".25"/>
+          <text x="350" y="254" text-anchor="middle" fill="white" font-size="10" font-weight="bold">YOU</text>
+          <!-- Task pins -->
+          <g cursor="pointer">
+            <rect x="130" y="80" width="80" height="26" rx="13" fill="#22C55E"/>
+            <text x="170" y="97" text-anchor="middle" fill="#052e16" font-size="11" font-weight="bold">₹200 🛒</text>
+          </g>
+          <g cursor="pointer">
+            <rect x="490" y="330" width="80" height="26" rx="13" fill="#7C6FFF"/>
+            <text x="530" y="347" text-anchor="middle" fill="white" font-size="11" font-weight="bold">₹500 🔧</text>
+          </g>
+          <g cursor="pointer">
+            <rect x="50" y="290" width="80" height="26" rx="13" fill="#F5A623"/>
+            <text x="90" y="307" text-anchor="middle" fill="#292524" font-size="11" font-weight="bold">₹150 🛍️</text>
+          </g>
+          <g cursor="pointer">
+            <rect x="470" y="170" width="80" height="26" rx="13" fill="#1BC8E0"/>
+            <text x="510" y="187" text-anchor="middle" fill="#083344" font-size="11" font-weight="bold">₹350 💻</text>
+          </g>
+          <g cursor="pointer">
+            <rect x="220" y="370" width="80" height="26" rx="13" fill="#E74C3C"/>
+            <text x="260" y="387" text-anchor="middle" fill="white" font-size="11" font-weight="bold">₹800 📦</text>
+          </g>
+          <g cursor="pointer">
+            <rect x="310" y="85" width="80" height="26" rx="13" fill="#22C55E"/>
+            <text x="350" y="102" text-anchor="middle" fill="#052e16" font-size="11" font-weight="bold">₹120 🧹</text>
+          </g>
+        </svg>
+        <div class="map-overlay-top">
+          <div class="map-badge"><div class="map-badge-dot"></div>14 tasks nearby</div>
+          <button class="btn-icon">🧭</button>
+        </div>
+      </div>
+
+      <div class="map-sidebar">
+        <p style="font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.8px;">Closest to you</p>
+        <div id="map-task-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: WALLET
+══════════════════════════════════ -->
+<div id="page-wallet" class="page hidden">
+  <div style="padding:28px 24px; max-width:900px; margin:0 auto;">
+    <h1 style="font-size:28px; margin-bottom:24px;">Wallet</h1>
+    <div class="wallet-card">
+      <div style="position:relative; z-index:1;">
+        <p style="font-size:12px; color:#C7C3FF; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">Available balance</p>
+        <p style="font-family:'Clash Display',sans-serif; font-size:44px; font-weight:700; color:#fff; margin-bottom:4px;" id="wallet-balance">₹0</p>
+        <p style="font-size:13px; color:#A5B4FC; margin-bottom:4px;">Earned this month: <span id="wallet-earned">₹0</span></p>
+      </div>
+      <div class="wallet-actions">
+        <button class="wallet-action-btn" onclick="showToast('💸 Withdrawal initiated — arrives in 1–2 business days')">Withdraw</button>
+        <button class="wallet-action-btn" onclick="showToast('💳 Opening payment gateway...')">Add funds</button>
+        <button class="wallet-action-btn" onclick="showPage('create')">Pay for task</button>
+      </div>
+    </div>
+
+    <div class="stat-grid" style="margin-bottom:28px;">
+      <div class="stat"><div class="stat-val" style="color:var(--green);" id="wallet-stat-earned">₹0</div><div class="stat-lbl">Total earned</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--amber);" id="wallet-stat-spent">₹0</div><div class="stat-lbl">Total spent</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--cyan);">₹0</div><div class="stat-lbl">In escrow</div></div>
+      <div class="stat"><div class="stat-val" id="wallet-stat-txcount">0</div><div class="stat-lbl">Transactions</div></div>
+    </div>
+
+    <div style="background:var(--bg2); border:1px solid var(--p)44; border-radius:var(--r-lg); padding:20px; margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div>
+          <p style="font-size:16px; font-weight:700; color:#A5B4FC;">StepIn Pro</p>
+          <p style="font-size:13px; color:var(--muted); margin-top:4px;">Zero platform fees on 5 tasks/mo · Priority listing · Analytics</p>
+        </div>
+        <span class="badge badge-a">ACTIVE</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <p style="font-size:13px; color:var(--muted);">Renews Feb 18 · ₹399/month</p>
+        <button class="btn-sm-o">Manage plan</button>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Transaction history</div>
+      <span class="section-link">Export CSV</span>
+    </div>
+    <div class="card">
+      <div class="tx-list" id="wallet-tx-list">
+        <div class="empty" style="padding:32px;">
+          <div class="empty-icon">💳</div>
+          <h3>No transactions yet</h3>
+          <p>Post or complete tasks to see your activity here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: PROFILE
+══════════════════════════════════ -->
+<div id="page-profile" class="page hidden">
+  <div style="padding:28px 24px; max-width:900px; margin:0 auto;">
+    <div class="profile-header">
+      <div class="profile-av-wrap">
+        <div class="av av-xl" id="profile-av">U</div>
+        <div class="profile-edit-btn" onclick="showToast('📷 Upload photo')">✎</div>
+      </div>
+      <div style="flex:1;">
+        <h1 style="font-size:28px; margin-bottom:4px;" id="profile-name">User</h1>
+        <p style="color:var(--muted); font-size:14px; margin-bottom:10px;" id="profile-handle">@user · StepIn member</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+          <span class="badge badge-p">New member</span>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-ghost" style="font-size:13px; padding:8px 18px;">Edit profile</button>
+          <button class="btn" style="font-size:13px; padding:8px 18px;" onclick="showToast('🔗 Profile link copied!')">Share profile</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid" style="margin-bottom:28px;">
+      <div class="stat"><div class="stat-val" id="profile-stat-completed">0</div><div class="stat-lbl">Completed</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--amber);">—</div><div class="stat-lbl">Rating</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--green);" id="profile-stat-earned">₹0</div><div class="stat-lbl">Total earned</div></div>
+      <div class="stat"><div class="stat-val" id="profile-stat-posted">0</div><div class="stat-lbl">Tasks posted</div></div>
+    </div>
+
+    <div class="profile-grid">
+      <!-- Task history -->
+      <div>
+        <div class="section-header"><div class="section-title">My tasks</div><span class="section-link" onclick="showPage('feed')">Browse all</span></div>
+        <div class="card" id="profile-task-history">
+          <div class="empty" style="padding:24px;">
+            <div class="empty-icon">📋</div>
+            <p style="color:var(--muted);">Your posted tasks will appear here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div>
+        <div class="section-header"><div class="section-title">Achievements</div></div>
+        <div class="achievement-grid">
+          <div class="achievement earned"><div class="achievement-icon">🔥</div><div class="achievement-name">10-day streak</div></div>
+          <div class="achievement earned"><div class="achievement-icon">🥇</div><div class="achievement-name">First review</div></div>
+          <div class="achievement earned"><div class="achievement-icon">💰</div><div class="achievement-name" style="color:var(--amber);">₹10K earned</div></div>
+          <div class="achievement earned"><div class="achievement-icon">⭐</div><div class="achievement-name">5-star task</div></div>
+          <div class="achievement locked"><div class="achievement-icon">🚀</div><div class="achievement-name">50 tasks</div></div>
+          <div class="achievement locked"><div class="achievement-icon">🏔️</div><div class="achievement-name">Elite tier</div></div>
+          <div class="achievement locked"><div class="achievement-icon">🌟</div><div class="achievement-name">₹50K earned</div></div>
+          <div class="achievement locked"><div class="achievement-icon">👑</div><div class="achievement-name">Community king</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Settings -->
+    <div class="section-header" style="margin-bottom:12px;"><div class="section-title">Settings</div></div>
+    <div class="card">
+      <div class="tx-row" onclick="showToast('🔔 Notification settings opened')">
+        <div class="tx-icon" style="background:var(--p-lite); font-size:18px; cursor:pointer;">🔔</div>
+        <div style="flex:1;"><p style="font-size:14px; font-weight:500; cursor:pointer;">Notifications</p><p style="font-size:12px; color:var(--muted);">Tasks, payments, reminders</p></div>
+        <div style="width:42px; height:22px; background:var(--green); border-radius:11px; position:relative; cursor:pointer;">
+          <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; right:3px;"></div>
+        </div>
+      </div>
+      <div class="tx-row">
+        <div class="tx-icon" style="background:var(--cyan-lite); font-size:18px;">📍</div>
+        <div style="flex:1;"><p style="font-size:14px; font-weight:500;">Location sharing</p><p style="font-size:12px; color:var(--muted);">Required for GPS task matching</p></div>
+        <div style="width:42px; height:22px; background:var(--green); border-radius:11px; position:relative; cursor:pointer;">
+          <div style="width:16px; height:16px; background:#fff; border-radius:50%; position:absolute; top:3px; right:3px;"></div>
+        </div>
+      </div>
+      <div class="tx-row" onclick="showToast('🔒 Privacy settings')">
+        <div class="tx-icon" style="background:var(--amber-lite); font-size:18px; cursor:pointer;">🔒</div>
+        <div style="flex:1;"><p style="font-size:14px; font-weight:500; cursor:pointer;">Privacy &amp; safety</p></div>
+        <span style="color:var(--muted); font-size:18px;">›</span>
+      </div>
+      <div class="tx-row" onclick="showToast('📑 Terms of service')">
+        <div class="tx-icon" style="background:var(--bg4); font-size:18px; cursor:pointer;">📑</div>
+        <div style="flex:1;"><p style="font-size:14px; font-weight:500; cursor:pointer;">Terms &amp; Privacy Policy</p></div>
+        <span style="color:var(--muted); font-size:18px;">›</span>
+      </div>
+      <div class="tx-row" style="border:none;" onclick="signOut()">
+        <div class="tx-icon" style="background:var(--red-lite); font-size:18px; cursor:pointer;">🚪</div>
+        <div style="flex:1;"><p style="font-size:14px; font-weight:500; color:var(--red); cursor:pointer;">Sign out</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">Step<span>In</span></div>
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <a href="#" style="color:var(--muted); font-size:13px; text-decoration:none;" onclick="showPage('feed'); return false;">Browse tasks</a>
+      <a href="#" style="color:var(--muted); font-size:13px; text-decoration:none;" onclick="showPage('map'); return false;">Map</a>
+      <span style="color:var(--muted); font-size:13px; cursor:pointer;" onclick="showToast('📄 Opening Terms...')">Terms</span>
+      <span style="color:var(--muted); font-size:13px; cursor:pointer;" onclick="showToast('🔒 Opening Privacy...')">Privacy</span>
+    </div>
+    <p class="footer-copy">© 2026 StepIn. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+/* ── State ── */
+let isAuthed = false;
+let currentCat = 'all';
+let currentCreateStep = 1;
+let userName = 'User';
+let userInitials = 'U';
+
+/* ── Task Data (starts empty — populated by real posts) ── */
+let tasks = [];
+let nextTaskId = 1;
+let transactions = [];
+let walletBalance = 0;
+let totalEarned = 0;
+let tasksPosted = 0;
+let tasksCompleted = 0;
+
+/* ── Page Navigation ── */
+const pages = ['landing','auth','dash','feed','create','map','wallet','profile'];
+function showPage(name) {
+  pages.forEach(p => {
+    const el = document.getElementById('page-' + p);
+    if (el) el.classList.add('hidden');
+  });
+  const target = document.getElementById('page-' + name);
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.add('anim-fade');
+    setTimeout(() => target.classList.remove('anim-fade'), 400);
+  }
+  // Update nav active state
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const navMap = isAuthed
+    ? { dash: 0, feed: 1, map: 2, wallet: 3 }
+    : { feed: 0, map: 1 };
+  const links = document.querySelectorAll('.nav-link');
+  if (navMap[name] !== undefined) links[navMap[name]]?.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const footer = document.getElementById('footer');
+  if (footer) footer.style.display = name === 'auth' ? 'none' : '';
+
+  if (name === 'feed') renderFeed();
+  if (name === 'map') renderMapSidebar();
+  if (name === 'dash') renderDashboard();
+  if (name === 'wallet') renderWallet();
+  if (name === 'profile') renderProfile();
+  if (name === 'create') {
+    currentCreateStep = 1;
+    renderCreateSteps();
+    document.getElementById('ct-date').valueAsDate = new Date();
+    setTimeout(updateFees, 50);
+  }
+}
+
+/* ── Auth ── */
+function signIn() {
+  isAuthed = true;
+  // Grab name from sign-up form if filled, else default
+  const firstInp = document.querySelector('#auth-signup input[placeholder="Priya"]');
+  const lastInp  = document.querySelector('#auth-signup input[placeholder="Sharma"]');
+  const first = firstInp?.value.trim() || '';
+  const last  = lastInp?.value.trim()  || '';
+  if (first) {
+    userName = first + (last ? ' ' + last : '');
+    userInitials = (first[0] + (last ? last[0] : '')).toUpperCase();
+  }
+  document.getElementById('nav-right').classList.add('hidden');
+  document.getElementById('nav-authed').classList.remove('hidden');
+  // Update avatar initials in navbar
+  document.querySelector('#nav-authed .av').textContent = userInitials;
+  document.getElementById('nav-links').innerHTML = `
+    <button class="nav-link" onclick="showPage('dash')">Dashboard</button>
+    <button class="nav-link" onclick="showPage('feed')">Tasks</button>
+    <button class="nav-link" onclick="showPage('map')">Map</button>
+    <button class="nav-link" onclick="showPage('wallet')">Wallet</button>
+  `;
+  document.getElementById('onboard-overlay').classList.remove('hidden');
+}
+function signUp() { signIn(); }
+function signOut() {
+  isAuthed = false;
+  // Reset all state
+  tasks = []; nextTaskId = 1; transactions = [];
+  walletBalance = 0; totalEarned = 0; tasksPosted = 0; tasksCompleted = 0;
+  userName = 'User'; userInitials = 'U';
+  document.getElementById('nav-right').classList.remove('hidden');
+  document.getElementById('nav-authed').classList.add('hidden');
+  document.getElementById('nav-links').innerHTML = `
+    <button class="nav-link" onclick="showPage('feed')">Browse tasks</button>
+    <button class="nav-link" onclick="showPage('map')">Map</button>
+  `;
+  showPage('landing');
+  showToast('👋 Signed out successfully');
+}
+function switchAuth(tab) {
+  document.getElementById('auth-signin').classList.toggle('hidden', tab !== 'signin');
+  document.getElementById('auth-signup').classList.toggle('hidden', tab !== 'signup');
+  document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('auth-subtitle').textContent = tab === 'signin' ? 'Sign in to your account' : 'Create your free account';
+}
+function showOTP() {
+  document.getElementById('otp-section').classList.remove('hidden');
+  showToast('📱 OTP sent to your phone!');
+}
+
+/* ── Onboarding ── */
+function onboardNext(step) {
+  ['onboard-step-1','onboard-step-2','onboard-step-3'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('onboard-step-' + step).classList.remove('hidden');
+  const dots = document.querySelectorAll('.onboard-dot');
+  dots.forEach((d, i) => {
+    d.classList.remove('active','done');
+    if (i < step - 1) d.classList.add('done');
+    else if (i === step - 1) d.classList.add('active');
+  });
+}
+function finishOnboard() {
+  // Capture name from onboarding form if filled
+  const nameInp = document.getElementById('ob-name');
+  const locInp  = document.getElementById('ob-loc');
+  if (nameInp?.value.trim()) {
+    userName = nameInp.value.trim();
+    const parts = userName.split(' ');
+    userInitials = parts.map(p => p[0]).join('').toUpperCase().slice(0,2);
+    document.querySelector('#nav-authed .av').textContent = userInitials;
+  }
+  document.getElementById('onboard-overlay').classList.add('hidden');
+  renderDashboard();
+  showPage('dash');
+  showToast('🎉 Welcome to StepIn, ' + userName.split(' ')[0] + '!');
+}
+function toggleGoal(el) {
+  el.classList.toggle('selected');
+  el.querySelector('.goal-check').textContent = el.classList.contains('selected') ? '✓' : '';
+}
+function autoDetectLocation() { showToast('📍 Location detected: Bandra West, Mumbai'); }
+
+/* ── Task Feed ── */
+function filterCat(el, cat) {
+  document.querySelectorAll('#cat-filter .chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  currentCat = cat;
+  renderFeed();
+}
+function renderFeed() {
+  const grid = document.getElementById('feed-grid');
+  if (!grid) return;
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const sort = document.getElementById('sort-select')?.value || 'newest';
+  let filtered = tasks.filter(t => {
+    const catMatch = currentCat === 'all' || t.cat === currentCat;
+    const searchMatch = !search || t.title.toLowerCase().includes(search) || t.desc.toLowerCase().includes(search);
+    return catMatch && searchMatch;
+  });
+  if (sort === 'reward') filtered.sort((a,b) => b.reward - a.reward);
+  else if (sort === 'closest') filtered.sort((a,b) => parseFloat(a.dist) - parseFloat(b.dist));
+  grid.innerHTML = filtered.length ? filtered.map(t => taskCardHTML(t)).join('') : `
+    <div class="empty" style="grid-column:1/-1;">
+      <div class="empty-icon">🔍</div>
+      <h3>No tasks found</h3>
+      <p>Try adjusting your search or filters</p>
+    </div>`;
+}
+function taskCardHTML(t) {
+  const catColor = { delivery:'badge-g', repair:'badge-c', shopping:'badge-a', tech:'badge-p', cleaning:'badge-r', moving:'badge-a' };
+  const urgentClass = t.urgent ? ' urgent' : '';
+  return `<div class="task-card${urgentClass}" onclick="openTaskModal(tasks[${t.id-1}])">
+    <div class="task-meta">
+      <span class="badge ${catColor[t.cat]||'badge-p'}">${t.catLabel}</span>
+      ${t.urgent ? '<span class="badge badge-r">URGENT</span>' : ''}
+      <span style="font-size:12px;color:var(--muted);margin-left:auto;">${t.dist}</span>
+    </div>
+    <div class="task-title">${t.title}</div>
+    <div class="task-info">
+      <span>📍 ${t.dist}</span><span>🕒 ${t.time}</span><span>⏱ ${t.duration}</span>
+    </div>
+    <div class="task-footer">
+      <div class="task-poster">
+        <div class="av av-sm">${t.poster.split(' ').map(w=>w[0]).join('')}</div>
+        <span style="font-size:12px;color:var(--text2);">${t.poster} · ⭐${t.rating}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:12px;color:var(--muted);">${t.applicants} applied</span>
+        <span class="task-reward">₹${t.reward}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── Task Modal ── */
+function openTaskModal(t) {
+  if (!t) return;
+  const catColor = { delivery:'badge-g', repair:'badge-c', shopping:'badge-a', tech:'badge-p', cleaning:'badge-r', moving:'badge-a' };
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <span class="badge ${catColor[t.cat]||'badge-p'}" style="margin-bottom:10px;display:inline-flex;">${t.catLabel}</span>
+        <h2 style="font-size:22px;">${t.title}</h2>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px;">${t.desc}</p>
+    <div>
+      <div class="modal-detail-row"><span class="modal-detail-icon">📍</span><div><p style="font-size:13px;color:var(--muted);margin-bottom:2px;">Location</p><p style="font-size:14px;">${t.dist} from you</p></div></div>
+      <div class="modal-detail-row"><span class="modal-detail-icon">🕒</span><div><p style="font-size:13px;color:var(--muted);margin-bottom:2px;">When</p><p style="font-size:14px;">${t.time} · ${t.duration}</p></div></div>
+      <div class="modal-detail-row"><span class="modal-detail-icon">👤</span><div><p style="font-size:13px;color:var(--muted);margin-bottom:2px;">Posted by</p><p style="font-size:14px;">${t.poster} · ⭐${t.rating}</p></div></div>
+      <div class="modal-detail-row" style="border:none;"><span class="modal-detail-icon">👥</span><div><p style="font-size:13px;color:var(--muted);margin-bottom:2px;">Applicants</p><p style="font-size:14px;">${t.applicants} people have applied</p></div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:var(--r);padding:16px;margin-bottom:20px;">
+      <div><p style="font-size:13px;color:var(--muted);">Task reward</p><p style="font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--green);">₹${t.reward}</p></div>
+      <div style="text-align:right;"><span class="badge badge-g">🔒 Escrow protected</span></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-ghost" onclick="closeModal()" style="flex:1;">Cancel</button>
+      <button class="btn" style="flex:2;" onclick="applyTask(${t.id})">Apply for this task →</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
+document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target.id === 'modal-overlay') closeModal(); });
+function applyTask(id) {
+  if (!isAuthed) {
+    closeModal();
+    showToast('ℹ️ Please sign in to apply for tasks');
+    showPage('auth');
+    return;
+  }
+  closeModal();
+  showToast('✅ Application sent! The poster will review and respond shortly.');
+}
+
+/* ── Map sidebar ── */
+function renderMapSidebar() {
+  const el = document.getElementById('map-task-list');
+  if (!el) return;
+  el.innerHTML = tasks.slice(0,6).map(t => `
+    <div class="card" style="cursor:pointer;margin-bottom:10px;" onclick="openTaskModal(tasks[${t.id-1}])">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div style="flex:1;padding-right:8px;"><p style="font-size:14px;font-weight:600;line-height:1.3;">${t.title}</p></div>
+        <span style="font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;color:var(--green);white-space:nowrap;">₹${t.reward}</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);">📍 ${t.dist} · ${t.time}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-size:12px;color:var(--text2);">⭐${t.rating} · ${t.applicants} applied</span>
+        <button class="btn-sm" style="font-size:11px;" onclick="event.stopPropagation();applyTask(${t.id})">Apply</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ── Create Task ── */
+function createStep(n) {
+  if (n > 1) {
+    if (n === 2 && !document.getElementById('ct-title').value.trim()) {
+      showToast('⚠️ Please enter a task title'); return;
+    }
+    if (n === 3 && !document.getElementById('ct-loc').value.trim()) {
+      showToast('⚠️ Please enter a location'); return;
+    }
+    if (n === 4 && (!document.getElementById('ct-reward').value || parseFloat(document.getElementById('ct-reward').value) < 50)) {
+      showToast('⚠️ Please enter a reward of at least ₹50'); return;
+    }
+  }
+  currentCreateStep = n;
+  renderCreateSteps();
+  if (n === 4) populateReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function renderCreateSteps() {
+  for (let i = 1; i <= 4; i++) {
+    const step = document.getElementById('cs' + i);
+    const form = document.getElementById('cf' + i);
+    if (!step || !form) continue;
+    step.className = 'create-step' + (i < currentCreateStep ? ' done' : i === currentCreateStep ? ' active' : '');
+    form.className = 'create-form' + (i === currentCreateStep ? ' active' : '');
+  }
+}
+function updateFees() {
+  const r = parseFloat(document.getElementById('ct-reward')?.value) || 0;
+  const fee = Math.round(r * 0.10);
+  const total = r + fee;
+  const fmt = v => v ? '₹' + v : '₹0';
+  document.getElementById('fee-reward').textContent = fmt(r);
+  document.getElementById('fee-platform').textContent = fmt(fee);
+  document.getElementById('fee-total').textContent = fmt(total);
+}
+function populateReview() {
+  const title = document.getElementById('ct-title')?.value || 'Untitled task';
+  const cat = document.getElementById('ct-cat')?.options[document.getElementById('ct-cat').selectedIndex]?.text || 'Task';
+  const loc = document.getElementById('ct-loc')?.value || 'Not set';
+  const date = document.getElementById('ct-date')?.value || '';
+  const time = document.getElementById('ct-time')?.value || '';
+  const reward = parseFloat(document.getElementById('ct-reward')?.value) || 200;
+  const fee = Math.round(reward * 0.10);
+  document.getElementById('review-title').textContent = title;
+  const catEl = document.getElementById('ct-cat');
+  const catLabels = { delivery:'🛒 DELIVERY', repair:'🔧 REPAIR', cleaning:'🧹 CLEANING', tech:'💻 TECH', moving:'📦 MOVING', other:'🔖 OTHER' };
+  document.getElementById('review-cat').textContent = catLabels[catEl.value] || cat;
+  document.getElementById('review-loc').textContent = loc;
+  const dateStr = date ? new Date(date + 'T00:00').toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short'}) : 'Not set';
+  const timeStr = time ? (() => { const [h,m]=time.split(':'); const ampm=+h>=12?'PM':'AM'; return `${+h%12||12}:${m} ${ampm}`; })() : '';
+  document.getElementById('review-date').textContent = [dateStr, timeStr].filter(Boolean).join(' · ');
+  document.getElementById('review-reward').textContent = '₹' + reward;
+  document.getElementById('review-fee-reward').textContent = '₹' + reward;
+  document.getElementById('review-fee-platform').textContent = '₹' + fee;
+  document.getElementById('review-fee-total').textContent = '₹' + (reward + fee);
+}
+/* ── Dashboard Renderer ── */
+function renderDashboard() {
+  const hr = new Date().getHours();
+  const greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  const greetEl = document.getElementById('dash-greeting');
+  if (greetEl) greetEl.textContent = greeting + ' 👋';
+  const nameEl = document.getElementById('dash-username');
+  if (nameEl) nameEl.textContent = userName;
+  const initialsEl = document.getElementById('dash-initials');
+  if (initialsEl) initialsEl.textContent = userInitials;
+
+  const heroEarnings = document.getElementById('dash-hero-earnings');
+  if (heroEarnings) heroEarnings.textContent = '₹' + totalEarned.toLocaleString('en-IN');
+  const heroSub = document.getElementById('dash-hero-sub');
+  if (heroSub) heroSub.textContent = tasksCompleted + ' tasks completed · ' + tasksPosted + ' posted';
+
+  const s = document.getElementById('stat-posted');    if(s) s.textContent = tasksPosted;
+  const sc = document.getElementById('stat-completed'); if(sc) sc.textContent = tasksCompleted;
+  const sw = document.getElementById('stat-wallet');
+  if(sw) sw.textContent = walletBalance > 0 ? '₹' + walletBalance.toLocaleString('en-IN') : '₹0';
+
+  const panel = document.getElementById('dash-active-tasks');
+  if (panel) {
+    const myTasks = tasks.filter(t => t.mine);
+    if (myTasks.length === 0) {
+      panel.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📋</div>
+          <h3>No tasks yet</h3>
+          <p style="margin-bottom:16px;">Post your first task and find someone to help.</p>
+          <button class="btn" onclick="showPage('create')">+ Post a task</button>
+        </div>`;
+    } else {
+      const catColor = { delivery:'badge-g', repair:'badge-c', shopping:'badge-a', tech:'badge-p', cleaning:'badge-r', moving:'badge-a', other:'badge-p' };
+      panel.innerHTML = myTasks.slice(0, 3).map(t => `
+        <div class="task-card" style="margin-bottom:12px;" onclick="openTaskModal(tasks.find(x=>x.id===${t.id}))">
+          <div class="task-meta">
+            <span class="badge ${catColor[t.cat]||'badge-p'}">${t.catLabel}</span>
+            <span class="badge badge-a" style="margin-left:4px;">OPEN</span>
+            <span style="font-size:12px;color:var(--muted);margin-left:auto;">Just now</span>
+          </div>
+          <div class="task-title">${t.title}</div>
+          <div class="task-info"><span>📍 ${t.loc}</span><span>🕒 ${t.time}</span></div>
+          <div class="task-footer">
+            <span style="font-size:13px;color:var(--muted);">${t.applicants} applicants</span>
+            <span class="task-reward">₹${t.reward}</span>
+          </div>
+        </div>`).join('');
+    }
+  }
+
+  const actPanel = document.getElementById('dash-activity');
+  if (actPanel) {
+    if (transactions.length === 0) {
+      actPanel.innerHTML = `<div class="empty" style="padding:24px;"><div class="empty-icon">📊</div><p style="color:var(--muted);">No activity yet. Post or apply for tasks to get started.</p></div>`;
+    } else {
+      actPanel.innerHTML = transactions.slice(0, 4).map((tx, i) => `
+        <div class="tx-row" ${i === Math.min(transactions.length,4)-1 ? 'style="border:none;"' : ''}>
+          <div class="tx-icon" style="background:${tx.bg};">${tx.icon}</div>
+          <div style="flex:1;"><p style="font-size:14px;font-weight:500;">${tx.label}</p><p style="font-size:12px;color:var(--muted);">${tx.sub}</p></div>
+          <span class="tx-amt" style="color:${tx.credit ? 'var(--green)' : 'var(--red)'};">${tx.amt}</span>
+        </div>`).join('');
+    }
+  }
+
+  const goalsPanel = document.getElementById('dash-goals');
+  if (goalsPanel) {
+    if (tasksPosted === 0 && tasksCompleted === 0) {
+      goalsPanel.innerHTML = `<div class="empty" style="padding:20px;"><div class="empty-icon">🎯</div><p style="color:var(--muted);">Complete your first task to start tracking goals.</p></div>`;
+    } else {
+      const earnPct = Math.min(100, Math.round((totalEarned / 5000) * 100));
+      const taskPct = Math.min(100, Math.round((tasksCompleted / 10) * 100));
+      goalsPanel.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:14px;">💰 Monthly earnings</span>
+            <span style="font-size:14px;color:var(--p);font-weight:700;">${earnPct}%</span>
+          </div>
+          <div class="prog"><div class="prog-fill" style="width:${earnPct}%;background:var(--p);"></div></div>
+          <span style="font-size:12px;color:var(--muted);">₹${totalEarned.toLocaleString('en-IN')} / ₹5,000 goal</span>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:14px;">🤝 Tasks completed</span>
+            <span style="font-size:14px;color:var(--green);font-weight:700;">${taskPct}%</span>
+          </div>
+          <div class="prog"><div class="prog-fill" style="width:${taskPct}%;background:var(--green);"></div></div>
+          <span style="font-size:12px;color:var(--muted);">${tasksCompleted} / 10 this month</span>
+        </div>`;
+    }
+  }
+}
+
+/* ── Wallet Renderer ── */
+function renderWallet() {
+  const balEl = document.getElementById('wallet-balance');
+  if (balEl) balEl.textContent = '₹' + walletBalance.toLocaleString('en-IN');
+  const earnEl = document.getElementById('wallet-earned');
+  if (earnEl) earnEl.textContent = '₹' + totalEarned.toLocaleString('en-IN');
+  const earnStatEl = document.getElementById('wallet-stat-earned');
+  if (earnStatEl) earnStatEl.textContent = '₹' + totalEarned.toLocaleString('en-IN');
+  const spentEl = document.getElementById('wallet-stat-spent');
+  if (spentEl) {
+    const spent = transactions.filter(t => !t.credit).reduce((s, t) => s + parseInt(t.amt.replace(/[^0-9]/g,'')||0), 0);
+    spentEl.textContent = '₹' + spent.toLocaleString('en-IN');
+  }
+  const txCountEl = document.getElementById('wallet-stat-txcount');
+  if (txCountEl) txCountEl.textContent = transactions.length;
+  const txList = document.getElementById('wallet-tx-list');
+  if (txList) {
+    if (transactions.length === 0) {
+      txList.innerHTML = `<div class="empty" style="padding:32px;"><div class="empty-icon">💳</div><h3>No transactions yet</h3><p>Post or complete tasks to see your activity here.</p></div>`;
+    } else {
+      txList.innerHTML = transactions.map((tx, i) => `
+        <div class="tx-row" ${i===transactions.length-1?'style="border:none;"':''}>
+          <div class="tx-icon" style="background:${tx.bg};">${tx.icon}</div>
+          <div style="flex:1;"><p style="font-size:14px;font-weight:500;">${tx.label}</p><p style="font-size:12px;color:var(--muted);">${tx.sub}</p></div>
+          <span class="tx-amt" style="color:${tx.credit?'var(--green)':'var(--red)'};">${tx.amt}</span>
+        </div>`).join('');
+    }
+  }
+}
+
+/* ── Profile Renderer ── */
+function renderProfile() {
+  const nameEl = document.getElementById('profile-name');
+  if (nameEl) nameEl.textContent = userName;
+  const handleEl = document.getElementById('profile-handle');
+  if (handleEl) handleEl.textContent = '@' + userName.toLowerCase().replace(/\s+/g,'_') + ' · StepIn member';
+  const avEl = document.getElementById('profile-av');
+  if (avEl) avEl.textContent = userInitials;
+  const spEl = document.getElementById('profile-stat-posted');    if(spEl) spEl.textContent = tasksPosted;
+  const scEl = document.getElementById('profile-stat-completed'); if(scEl) scEl.textContent = tasksCompleted;
+  const seEl = document.getElementById('profile-stat-earned');    if(seEl) seEl.textContent = '₹' + totalEarned.toLocaleString('en-IN');
+
+  const histEl = document.getElementById('profile-task-history');
+  if (histEl) {
+    const myTasks = tasks.filter(t => t.mine);
+    if (myTasks.length === 0) {
+      histEl.innerHTML = `<div class="empty" style="padding:24px;"><div class="empty-icon">📋</div><p style="color:var(--muted);">Your posted tasks will appear here.</p></div>`;
+    } else {
+      histEl.innerHTML = myTasks.slice(0, 4).map((t, i) => `
+        <div class="tx-row" ${i===Math.min(myTasks.length,4)-1?'style="border:none;"':''}>
+          <div class="tx-icon" style="background:var(--p-lite);font-size:18px;">📋</div>
+          <div style="flex:1;"><p style="font-size:14px;font-weight:500;">${t.title}</p><p style="font-size:12px;color:var(--muted);">${t.time} · Open</p></div>
+          <span style="font-size:13px;font-weight:700;color:var(--amber);">₹${t.reward}</span>
+        </div>`).join('');
+    }
+  }
+}
+
+/* ── Toast ── */
+  const title   = document.getElementById('ct-title')?.value.trim() || 'Untitled task';
+  const catVal  = document.getElementById('ct-cat')?.value || 'other';
+  const desc    = document.getElementById('ct-desc')?.value.trim() || '';
+  const dateRaw = document.getElementById('ct-date')?.value || '';
+  const timeRaw = document.getElementById('ct-time')?.value || '';
+  const loc     = document.getElementById('ct-loc')?.value.trim() || 'Location not set';
+  const locNote = document.getElementById('ct-locnote')?.value.trim() || '';
+  const reward  = parseFloat(document.getElementById('ct-reward')?.value) || 200;
+  const durOpt  = document.getElementById('ct-duration')?.value || 'Less than 1 hour';
+
+  const catLabels = { delivery:'🛒 DELIVERY', repair:'🔧 REPAIR', cleaning:'🧹 CLEANING', tech:'💻 TECH', moving:'📦 MOVING', other:'🔖 OTHER' };
+  const catLabel  = catLabels[catVal] || '🔖 OTHER';
+
+  // Format time display
+  const dateStr = dateRaw ? new Date(dateRaw + 'T00:00').toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short'}) : 'TBD';
+  const timeStr = timeRaw ? (() => { const [h,m]=timeRaw.split(':'); const ampm=+h>=12?'PM':'AM'; return `${+h%12||12}:${m} ${ampm}`; })() : '';
+  const timeDisplay = [dateStr, timeStr].filter(Boolean).join(' · ');
+
+  // Duration display
+  const durMap = { 'Less than 1 hour':'~< 1 hr', '1–2 hours':'~1-2 hr', '2–4 hours':'~2-4 hr', 'Half day':'~half day', 'Full day':'~full day' };
+  const duration = durMap[durOpt] || durOpt;
+
+  // Random distance (simulated GPS)
+  const distKm = (Math.random() * 4 + 0.2).toFixed(1);
+
+  const newTask = {
+    id: nextTaskId++,
+    title, cat: catVal, catLabel, reward, desc,
+    dist: distKm + ' km',
+    time: timeDisplay,
+    duration,
+    loc: locNote ? loc + ' · ' + locNote : loc,
+    poster: userName,
+    rating: 5.0,
+    applicants: 0,
+    urgent: false,
+    postedAt: new Date(),
+    status: 'open',
+    mine: true
+  };
+
+  tasks.unshift(newTask);
+  tasksPosted++;
+
+  const fee = Math.round(reward * 0.10);
+  const total = reward + fee;
+  walletBalance = Math.max(0, walletBalance - total);
+  transactions.unshift({
+    icon: '📋', bg: 'var(--p-lite)',
+    label: 'Task posted — ' + title,
+    sub: 'Just now · Escrow held',
+    amt: '−₹' + total, credit: false
+  });
+
+  showToast('🚀 Task posted! ₹' + total + ' held in escrow.');
+
+  // Reset form
+  ['ct-title','ct-desc','ct-loc','ct-locnote'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  const catEl = document.getElementById('ct-cat'); if(catEl) catEl.value = '';
+  document.getElementById('ct-reward').value = '200';
+  document.getElementById('ct-date').valueAsDate = new Date();
+
+  setTimeout(() => { renderDashboard(); showPage('dash'); }, 800);
+}
+
+/* ── Toast ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', () => { renderFeed(); });
+</script>
+</body>
+</html>
